@@ -18,12 +18,24 @@ class Ball
     @x
   end
 
+  def lower_edge
+    @y + texture.length
+  end
+
+  def upper_edge
+    @y
+  end
+
   def move_left
-    self.x -= 1
+    self.x -= 5
   end
 
   def move_right
-    self.x += 1
+    self.x += 5
+  end
+
+  def move_up
+    self.y -= 1
   end
 
   def move_down(how_much = 1)
