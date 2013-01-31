@@ -11,7 +11,7 @@ class Ball
   end
 
   def right_edge
-    @x + @texture.first.length
+    @x + @texture.first.length - 1
   end
 
   def left_edge
@@ -19,11 +19,11 @@ class Ball
   end
 
   def lower_edge
-    @y + texture.length
+    @y + texture.length - 1
   end
 
   def lower_edge=(value)
-    @y = value - texture.length
+    @y = value - texture.length + 1
   end
 
   def upper_edge
@@ -31,11 +31,11 @@ class Ball
   end
 
   def move_left
-    self.x -= 5
+    self.x -= 3
   end
 
   def move_right
-    self.x += 5
+    self.x += 3
   end
 
   def move_up

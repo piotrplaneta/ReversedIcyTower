@@ -1,10 +1,9 @@
 # encoding: utf-8
-PATH = File.dirname(__FILE__)
 
 require "bundler/setup"
 require "gaminator"
-require File.join(PATH, "ball.rb")
-require File.join(PATH, "wall.rb")
+load "ball.rb"
+load "wall.rb"
 
 class BallGame
 
@@ -14,6 +13,7 @@ class BallGame
     @speed = 0
     @ball = Ball.new(width/2, height/2)
     @hole_width = 30
+    @walls_count = (height / 10).to_i
     generate_walls
   end
 
@@ -34,17 +34,16 @@ class BallGame
     walls_up
     clean_up_walls
     add_wall_if_necessary
-    ball_up_if_above_a_wall
-    ball_down
+    place_ball
     check_end_game
   end
 
   def exit_message
-    "Twój wynik: " + @ticks.to_s
+    "Your score: " + @ticks.to_s
   end
 
   def textbox_content
-    "Twój wynik: " + @ticks.to_s
+    "Your score: " + @ticks.to_s
   end
 
   def wait?
@@ -52,7 +51,7 @@ class BallGame
   end
 
   def sleep_time
-    0.1 - @speed * 0.005
+    [0.1 - @speed * 0.01, 0.001].max
   end
 
   def exit
@@ -75,7 +74,7 @@ class BallGame
     end
   end
 
-  def ball_down
+  def place_ball
     colliding_walls = @walls.select do |wall|
       !(wall.texture.first[@ball.left_edge] == " " &&
         wall.texture.first[@ball.right_edge] == " ") &&
@@ -84,25 +83,15 @@ class BallGame
 
     if colliding_walls.length > 0
       highest_colliding_wall = colliding_walls.min_by { |wall| wall.y }
-      @ball.lower_edge = highest_colliding_wall.y
+      @ball.lower_edge = highest_colliding_wall.y - 1
     else
-      @ball.lower_edge = @height
+      @ball.lower_edge = @height - 1
     end
 
-  end
-
-  def ball_up_if_above_a_wall
-    @walls.each do |wall|
-      if wall.y + 1 == @ball.lower_edge
-        unless wall.texture.first[@ball.left_edge] == " " && wall.texture.first[@ball.right_edge] == " "
-          @ball.move_up
-        end
-      end
-    end
   end
 
   def add_wall_if_necessary
-    @walls << Wall.new(@width, @hole_width, 0, @height - 1) if @walls.length < 3
+    @walls << Wall.new(@width, @hole_width, 0, @height - 1) if @walls.length < @walls_count
   end
 
   def clean_up_walls
@@ -115,8 +104,8 @@ class BallGame
 
   def generate_walls
     @walls = []
-    3.times do |i|
-      @walls << Wall.new(@width, @hole_width, 0, (i+1) * (@height / 3).to_i)
+    @walls_count.times do |i|
+      @walls << Wall.new(@width, @hole_width, 0, (i+1) * (@height / @walls_count).to_i)
     end
   end
 
@@ -132,7 +121,7 @@ class BallGame
     @ticks += 1
     if(@ticks % 50 == 0)
       @speed += 1
-      @hole_width -= 3
+      @hole_width = [@hole_width, 4].max
     end
   end
 
