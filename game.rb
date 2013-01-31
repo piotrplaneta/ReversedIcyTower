@@ -13,6 +13,7 @@ class BallGame
     @ticks = 0
     @speed = 0
     @ball = Ball.new(width/2, height/2)
+    @hole_width = 30
     generate_walls
   end
 
@@ -24,6 +25,7 @@ class BallGame
     {
       ?a => :move_ball_left,
       ?d => :move_ball_right,
+      ?q => :exit
     }
   end
 
@@ -33,6 +35,7 @@ class BallGame
     clean_up_walls
     add_wall_if_necessary
     ball_up_if_above_a_wall
+    ball_down
     check_end_game
   end
 
@@ -49,7 +52,7 @@ class BallGame
   end
 
   def sleep_time
-    0.1
+    0.1 - @speed * 0.005
   end
 
   def exit
@@ -72,6 +75,22 @@ class BallGame
     end
   end
 
+  def ball_down
+    colliding_walls = @walls.select do |wall|
+      !(wall.texture.first[@ball.left_edge] == " " &&
+        wall.texture.first[@ball.right_edge] == " ") &&
+        wall.y >= @ball.y
+    end
+
+    if colliding_walls.length > 0
+      highest_colliding_wall = colliding_walls.min_by { |wall| wall.y }
+      @ball.lower_edge = highest_colliding_wall.y
+    else
+      @ball.lower_edge = @height
+    end
+
+  end
+
   def ball_up_if_above_a_wall
     @walls.each do |wall|
       if wall.y + 1 == @ball.lower_edge
@@ -83,11 +102,11 @@ class BallGame
   end
 
   def add_wall_if_necessary
-    @walls << Wall.new(78, 30, 0, 20) if @walls.length < 3
+    @walls << Wall.new(@width, @hole_width, 0, @height - 1) if @walls.length < 3
   end
 
   def clean_up_walls
-    @walls.reject! {|wall| wall.y == 0}
+    @walls.reject! {|wall| wall.y <= 0}
   end
 
   def walls_up
@@ -97,7 +116,7 @@ class BallGame
   def generate_walls
     @walls = []
     3.times do |i|
-      @walls << Wall.new(78, 30, 0, i * 10)
+      @walls << Wall.new(@width, @hole_width, 0, (i+1) * (@height / 3).to_i)
     end
   end
 
@@ -111,9 +130,13 @@ class BallGame
 
   def increase_tick_count
     @ticks += 1
+    if(@ticks % 50 == 0)
+      @speed += 1
+      @hole_width -= 3
+    end
   end
 
 end
 
 
-Gaminator::Runner.new(BallGame, :rows => 30, :cols => 80).run
+Gaminator::Runner.new(BallGame).run

@@ -1,28 +1,17 @@
-require "bundler/setup"
-require "gaminator"
-
 class Wall
 	attr_accessor :x, :y, :texture, :space_start
 
 	def initialize(width, space_width, x, y)
 		@width, @space_width, @x, @y = width, space_width, x, y
-		@space_start = rand(0..(width - space_width - 2))
+		@space_start = rand(0..(width - space_width))
 
 		generate_texture
 	end
 
 	def generate_texture
-		texture = ""
+		texture = '#' * @width
 
-		0.upto(@space_start) do
-			texture += "#"
-		end
-
-		0.upto(@space_width) do
-			texture += " "
-		end
-
-		texture += "#" while texture.length < @width
+		texture[@space_start, @space_width] = " " * @space_width
 
 		@texture = [texture]
 	end

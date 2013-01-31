@@ -22,6 +22,10 @@ class Ball
     @y + texture.length
   end
 
+  def lower_edge=(value)
+    @y = value - texture.length
+  end
+
   def upper_edge
     @y
   end
