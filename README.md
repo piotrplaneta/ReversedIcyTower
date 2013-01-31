@@ -9,5 +9,7 @@ Controlls:
 -
 
 How to run?
-'''bundle install
-'''ruby game.rb
+```
+bundle install
+ruby game.rb
+```
