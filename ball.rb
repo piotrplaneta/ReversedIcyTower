@@ -1,5 +1,3 @@
-
-
 class Ball
   attr_accessor :x, :y, :texture, :color
 
@@ -10,6 +8,14 @@ class Ball
     @x, @y = x, y
     @texture = File.read(DATA_PATH + "ball" + TEXTURE_EXT).split("\n")
     @color = Curses::COLOR_GREEN
+  end
+
+  def right_edge
+    @x + @texture.first.length
+  end
+
+  def left_edge
+    @x
   end
 
   def move_left
