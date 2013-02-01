@@ -1,7 +1,7 @@
 class Ball
   attr_accessor :x, :y, :texture, :color
 
-  DATA_PATH = File.join(File.dirname(__FILE__), "data/")
+  DATA_PATH = File.join(File.dirname(__FILE__), "../data/")
   TEXTURE_EXT = ".txt"
 
   def initialize(x, y)
@@ -44,5 +44,10 @@ class Ball
 
   def move_down(how_much = 1)
     self.y -= how_much
+  end
+
+  def can_get_through(wall)
+    wall.texture.first[left_edge] == " " &&
+      wall.texture.first[right_edge] == " "
   end
 end

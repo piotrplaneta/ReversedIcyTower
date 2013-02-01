@@ -1,9 +1,5 @@
-# encoding: utf-8
-
-require "bundler/setup"
-require "gaminator"
-load "ball.rb"
-load "wall.rb"
+require "ball"
+require "wall"
 
 class BallGame
 
@@ -76,8 +72,7 @@ class BallGame
 
   def place_ball
     colliding_walls = @walls.select do |wall|
-      !(wall.texture.first[@ball.left_edge] == " " &&
-        wall.texture.first[@ball.right_edge] == " ") &&
+      !(@ball.can_get_through(wall)) &&
         wall.y >= @ball.y
     end
 
@@ -121,11 +116,8 @@ class BallGame
     @ticks += 1
     if(@ticks % 50 == 0)
       @speed += 1
-      @hole_width = [@hole_width, 4].max
+      @hole_width = [@hole_width - 3, 4].max
     end
   end
 
 end
-
-
-Gaminator::Runner.new(BallGame).run

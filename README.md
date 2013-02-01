@@ -11,5 +11,5 @@ Controlls:
 How to run?
 ```
 bundle install
-ruby game.rb
+ruby runner.rb
 ```
